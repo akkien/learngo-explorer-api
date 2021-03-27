@@ -1,0 +1,75 @@
+{{ define "content" }}
+<h2 class="text-center">Go Ropsten Explorer!</h2>
+</br>
+<div class="row bk-tx-container">
+  <!--BLOCK LIST-->
+  <div class="col">
+    <p class="h4 text-center mb-5">Latest Blocks</p>
+    {{ range .Blocks }}
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="media align-items-sm-center mr-4 mb-1 mb-sm-0">
+            <div class="d-none d-sm-flex mr-2">
+              <span class="btn btn-icon btn-soft-secondary">
+                <span class="btn-icon__inner text-dark">Bk</span>
+              </span>
+            </div>
+            <div class="media-body">
+              <span class="d-inline-block d-sm-none">Block</span> 
+              <a href="/block/{{.Number}}">{{ .Number }}</a>
+              <span class="d-sm-block small text-secondary ml-1 ml-sm-0 text-nowrap"> 31 secs ago</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-8">
+          <div class="d-flex justify-content-between">
+            <div class="text-nowrap">
+              <span class="d-block mb-1 mb-sm-0">Miner <a class="hash-tag text-truncate" href="/address/{{.Miner}}">{{ .Miner }}</a></span>
+              <a href="/txs?block={{.Number}}" data-toggle="tooltip" title="" data-original-title="Transactions in this Block">{{ .TransactionCount }} txns </a>
+              <span class="small text-secondary">in 1 sec</span>    
+            </div>      
+          </div>
+        </div>
+      </div>
+      <hr class="hr-space">
+    {{ end }}
+  </div>
+
+  <!--TRANSACTION LIST-->
+  <div class="col">
+    <p class="h4 text-center mb-5">Latest Transactions</p>
+    {{ range .Txs }}
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="media align-items-sm-center mr-4 mb-1 mb-sm-0">
+            <div class="d-none d-sm-flex mr-2">
+              <span class="btn btn-icon btn-soft-secondary rounded-circle">
+                <span class="btn-icon__inner text-dark">Tx</span>
+              </span>
+            </div>
+            <div class="media-body">
+              <span class="d-inline-block d-sm-none mr-1">TX#</span>
+              <a class="hash-tag hash-tag--xs hash-tag-xs-down--md text-truncate" href="/tx/{{.Hash}}">{{ .Hash }}</a>
+              <span class="d-none d-sm-block small text-secondary">1 min ago</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-8">
+          <div class="d-sm-flex justify-content-between">
+            <div class="text-nowrap mr-4 mb-1 mb-sm-0">
+              <span>From <a class="hash-tag text-truncate" href="/address/{{.From}}">{{ .From }}</a></span>
+              <span class="d-sm-block">To <a href="/address/{{.To}}" class="hash-tag text-truncate">{{ .To }}</a></span>
+            </div>
+            <div>
+              <span class="u-label u-label--xs u-label--badge-in u-label--secondary text-center text-nowrap" data-toggle="tooltip" title="" data-original-title="Amount">1<b>.</b>{{ .Value }} Eth</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="hr-space">
+    {{ end }}
+  </div>
+</div>
+
+
+{{ end }}
