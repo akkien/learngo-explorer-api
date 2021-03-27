@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/akkien/explorer-modern/controllers"
 	"github.com/akkien/explorer-modern/middlewares"
-	"github.com/akkien/explorer-modern/route"
 )
 
 func initializeRoutes() {
@@ -11,7 +11,7 @@ func initializeRoutes() {
 	router.Use(middlewares.SetUserStatus())
 
 	// Handle the index route
-	router.GET("/", route.Index)
+	router.GET("/", controllers.Index)
 
 	// // Group user related routes together
 	// userRoutes := router.Group("/u")

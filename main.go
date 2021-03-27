@@ -11,12 +11,14 @@ import (
 var router *gin.Engine
 
 func main() {
+
 	util.P("ChitChat", util.Config.Version, "started at", util.Config.Address)
 
+	// Gin config
 	gin.SetMode(gin.ReleaseMode)
 
 	router = gin.Default()
-	router.Static("/public", "./public")
+	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
 
 	initializeRoutes()

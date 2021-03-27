@@ -49,7 +49,8 @@ func Transactions(page, limit int) (txs []Transaction, err error) {
 // TransactionByHash : Get all blocks in the database and returns it
 func TransactionByHash(hash string) (item Transaction, err error) {
 	item = Transaction{}
-	db.DB.Where("hash = ?").Find(&item)
+	result := db.DB.Where("hash = ?").First(&item)
+	err = result.Error
 	return
 }
 

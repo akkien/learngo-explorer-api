@@ -60,6 +60,7 @@ func Blocks(page, limit int) (blocks []Block, err error) {
 // BlockByNumber : Get all blocks in the database and returns it
 func BlockByNumber(number int) (item Block, err error) {
 	item = Block{}
-	db.DB.Where("number = ?", number).Find(&item)
+	result := db.DB.Where("number = ?", number).First(&item)
+	err = result.Error
 	return
 }

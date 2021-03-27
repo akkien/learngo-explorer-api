@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/Masterminds/sprig"
-	"github.com/akkien/explorer-modern/data"
+	"github.com/akkien/explorer-modern/models"
 )
 
 // Convenience function for printing to stdout
@@ -24,10 +24,10 @@ func ErrorMessage(writer http.ResponseWriter, request *http.Request, msg string)
 }
 
 // Session checks if the user is logged in and has a session, if not err is not nil
-func Session(writer http.ResponseWriter, request *http.Request) (sess data.Session, err error) {
+func Session(writer http.ResponseWriter, request *http.Request) (sess models.Session, err error) {
 	cookie, err := request.Cookie("_cookie")
 	if err == nil {
-		sess = data.Session{UUID: cookie.Value}
+		sess = models.Session{UUID: cookie.Value}
 		if ok, _ := sess.Check(); !ok {
 			err = errors.New("Invalid session")
 		}

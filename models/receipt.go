@@ -34,6 +34,7 @@ var receiptParams = []string{
 // ReceiptByHash : Get all blocks in the database and returns it
 func ReceiptByHash(hash string) (item Receipt, err error) {
 	item = Receipt{}
-	db.DB.Where("transaction_hash = ?").Find(&item)
+	result := db.DB.Where("transaction_hash = ?").First(&item)
+	err = result.Error
 	return
 }
