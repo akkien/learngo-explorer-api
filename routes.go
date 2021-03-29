@@ -12,6 +12,9 @@ func initializeRoutes() {
 
 	// Handle the index route
 	router.GET("/", controllers.Index)
+	router.GET("/login", controllers.LoginPage)
+	router.GET("/signup", controllers.SignupPage)
+	router.GET("/signup", controllers.Signup)
 
 	// // Group user related routes together
 	// userRoutes := router.Group("/u")

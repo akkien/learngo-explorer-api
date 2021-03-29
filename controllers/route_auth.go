@@ -1,99 +1,104 @@
 package controllers
 
-// import (
-// 	"fmt"
-// 	"net/http"
+import (
+	"fmt"
+	"net/http"
 
-// 	"github.com/akkien/explorer-modern/models"
-// 	"github.com/akkien/explorer-modern/util"
-// 	"gopkg.in/go-playground/validator.v9"
-// )
+	"github.com/akkien/explorer-modern/models"
+	"github.com/akkien/explorer-modern/util"
+	"github.com/gin-gonic/gin"
+	"gopkg.in/go-playground/validator.v9"
+)
 
-// // GET /login
-// // Login show the login page
-// func Login(writer http.ResponseWriter, request *http.Request) {
-// 	t := util.ParseTemplateFiles("login.layout", "public.navbar", "login")
-// 	t.Execute(writer, nil)
-// }
+// GET /login
+// Login show the login page
+func LoginPage(c *gin.Context) {
+	res := gin.H{
+		"title": "Login",
+	}
+	render(c, res, "login.html")
+}
 
 // // GET /signup
 // // Signup show the signup page
-// func Signup(writer http.ResponseWriter, request *http.Request) {
-// 	util.GenerateHTML(writer, nil, "login.layout", "public.navbar", "signup")
-// }
+func SignupPage(c *gin.Context) {
+	res := gin.H{
+		"title": "Signup",
+	}
+	render(c, res, "signup.html")
+}
 
-// // POST /signup
-// // SignupAccount create the user account
-// func SignupAccount(writer http.ResponseWriter, request *http.Request) {
-// 	err := request.ParseForm()
-// 	if err != nil {
-// 		util.Danger(err, "Cannot parse form")
-// 	}
-// 	user := models.User{
-// 		Name:     request.PostFormValue("name"),
-// 		Email:    request.PostFormValue("email"),
-// 		Password: request.PostFormValue("password"),
-// 	}
+// POST /signup
+// SignupAccount create the user account
+func Signup(c *gin.Context) {
+	user := models.User{
+		Name:     c.PostForm("name"),
+		Email:    c.PostForm("email"),
+		Password: c.PostForm("password"),
+	}
 
-// 	val := validator.New()
-// 	err = val.Struct(user)
-// 	if err != nil {
-// 		responseBody := make(map[string]string)
-// 		for _, e := range err.(validator.ValidationErrors) {
-// 			responseBody[e.Field()] = fmt.Sprint(e)
-// 		}
-// 		util.GenerateHTML(writer, responseBody, "login.layout", "public.navbar", "signup")
-// 		return
-// 	}
+	val := validator.New()
+	err := val.Struct(user)
+	if err != nil {
+		responseBody := make(map[string]string)
+		for _, e := range err.(validator.ValidationErrors) {
+			responseBody[e.Field()] = fmt.Sprint(e)
+		}
+		res := gin.H{
+			"title":   "Signup",
+			"payload": responseBody,
+		}
+		render(c, res, "signup.html")
+		return
+	}
 
-// 	user.Password, err = util.HashPassword(user.Password)
-// 	if err != nil {
-// 		util.Danger(err, "Cannot hash password")
-// 	}
+	user.Password, err = util.HashPassword(user.Password)
+	if err != nil {
+		util.Danger(err, "Cannot hash password")
+	}
 
-// 	if err := user.Create(); err != nil {
-// 		util.Danger(err, "Cannot create user")
-// 	}
-// 	http.Redirect(writer, request, "/login", 302)
-// }
+	if err := user.Create(); err != nil {
+		util.Danger(err, "Cannot create user")
+	}
+	c.Redirect(http.StatusFound, "/login")
+}
 
-// // POST /authenticate
-// // Authenticate the user given the email and password
-// func Authenticate(writer http.ResponseWriter, request *http.Request) {
-// 	err := request.ParseForm()
-// 	user, err := models.UserByEmail(request.PostFormValue("email"))
-// 	if err != nil {
-// 		util.Danger(err, "Cannot find user")
-// 	}
+// // POST /login
+// // Login the user given the email and password
+func Login(c *gin.Context) {
+	user, err := models.UserByEmail(c.PostForm("email"))
+	if err != nil {
+		util.Danger(err, "Cannot find user")
+	}
 
-// 	password := request.PostFormValue("password")
-// 	fmt.Println(user, password)
-// 	isValidPassword := util.CheckPasswordHash(password, user.Password)
-// 	if isValidPassword != true {
-// 		util.Danger(err, "Invalid password")
-// 	}
+	password := c.PostForm("password")
+	fmt.Println(user, password)
+	isValidPassword := util.CheckPasswordHash(password, user.Password)
+	if isValidPassword != true {
+		util.Danger(err, "Invalid password")
+	}
 
-// 	session, err := user.CreateSession()
-// 	if err != nil {
-// 		util.Danger(err, "Cannot create session")
-// 	}
-// 	cookie := http.Cookie{
-// 		Name:     "_cookie",
-// 		Value:    session.UUID,
-// 		HttpOnly: true,
-// 	}
-// 	http.SetCookie(writer, &cookie)
-// 	http.Redirect(writer, request, "/", 302)
-// }
+	session, err := user.CreateSession()
+	if err != nil {
+		util.Danger(err, "Cannot create session")
+	}
+	cookie := http.Cookie{
+		Name:     "_cookie",
+		Value:    session.UUID,
+		HttpOnly: true,
+	}
+	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, cookie.Domain, cookie.Secure, cookie.HttpOnly)
+	c.Redirect(http.StatusFound, "/")
+}
 
-// // GET /logout
-// // Logout logs the user out
-// func Logout(writer http.ResponseWriter, request *http.Request) {
-// 	cookie, err := request.Cookie("_cookie")
-// 	if err != http.ErrNoCookie {
-// 		util.Warning(err, "Failed to get cookie")
-// 		session := models.Session{UUID: cookie.Value}
-// 		session.DeleteByUUID()
-// 	}
-// 	http.Redirect(writer, request, "/", 302)
-// }
+// GET /logout
+// Logout logs the user out
+func Logout(c *gin.Context) {
+	cookie, err := c.Cookie("_cookie")
+	if err != http.ErrNoCookie {
+		util.Warning(err, "Failed to get cookie")
+		session := models.Session{UUID: cookie}
+		session.DeleteByUUID()
+	}
+	c.Redirect(http.StatusFound, "/")
+}

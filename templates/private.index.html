@@ -1,4 +1,7 @@
-{{ define "content" }}
+{{ template "header" . }}
+
+{{ template "private.navbar" . }}
+
 <h2 class="text-center">Go Ropsten Explorer!</h2>
 </br>
 <div class="row bk-tx-container">
@@ -72,4 +75,4 @@
 </div>
 
 
-{{ end }}
+{{ template "footer" . }}

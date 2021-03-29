@@ -1,4 +1,5 @@
-{{ define "content" }}
+{{ template "header" . }}
+<div class="container">
 
 <form class="form-signin" role="form" action="/signup_account" method="post">
   <h2 class="form-signin-heading">
@@ -8,18 +9,20 @@
   </h2>
   <div class="lead">Sign up for an account below</div>
   <input id="name" type="text" name="name" class="form-control" placeholder="Name" autofocus>
-  {{ if . }}
+  {{ if .payload }}
       <p style="color:red">{{ index . "Name" }}</p>
   {{ end }}
   <input type="email" name="email" class="form-control" placeholder="Email address">
-  {{ if . }}
+  {{ if .payload }}
       <p style="color:red">{{ index . "Email" }}</p>
   {{ end }}
   <input type="password" name="password" class="form-control" placeholder="Password">
-  {{ if . }}
+  {{ if .payload }}
       <p style="color:red">{{ index . "Password" }}</p>
   {{ end }}
   <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
 </form>
+  
+</div>
 
-{{ end }}
+{{ template "footer" . }}

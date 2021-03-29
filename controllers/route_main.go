@@ -7,7 +7,6 @@ import (
 	"github.com/akkien/explorer-modern/models"
 	"github.com/akkien/explorer-modern/util"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 // GET /err?msg=
@@ -25,7 +24,7 @@ func Err(writer http.ResponseWriter, request *http.Request) {
 // Index controller
 func Index(c *gin.Context) {
 	isLoggedIn := c.GetBool("is_logged_in")
-	fmt.Println("GOPATH", viper.GetString("GOPATH"))
+
 	if isLoggedIn {
 		blocks, err := models.Blocks(1, 10)
 		txs, err := models.Transactions(1, 10)
@@ -43,14 +42,12 @@ func Index(c *gin.Context) {
 				"payload": response,
 			}
 			fmt.Println("HEllo2")
-			render(c, res, "test.html")
+			render(c, res, "private.index.html")
 		}
 	} else {
 		res := gin.H{
 			"title": "Home Page",
 		}
 		render(c, res, "public.index.html")
-		//util.GenerateHTML(writer, nil, "layout", "public.navbar", "public.index")
 	}
-
 }

@@ -6,14 +6,15 @@ import (
 
 	"github.com/akkien/explorer-modern/models"
 	"github.com/akkien/explorer-modern/util"
+	"github.com/gin-gonic/gin"
 )
 
 // GET /blocks
 // Show the new thread form page
-func ReadBlocks(writer http.ResponseWriter, request *http.Request) {
+func ReadBlocks(c *gin.Context) {
 	_, err := util.Session(writer, request)
 	if err != nil {
-		http.Redirect(writer, request, "/login", 302)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
@@ -23,15 +24,19 @@ func ReadBlocks(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	response := models.BksTxs{Blocks: blocks}
-	util.GenerateHTML(writer, response, "layout", "private.navbar", "blocks")
+	res := gin.H{
+		"title":   "Signup",
+		"payload": response,
+	}
+	render(c, res, "blocks.html")
 }
 
 // GET /txs
 // ReadTransactions Show the new thread form page
-func ReadTransactions(writer http.ResponseWriter, request *http.Request) {
+func ReadTransactions(c *gin.Context) {
 	_, err := util.Session(writer, request)
 	if err != nil {
-		http.Redirect(writer, request, "/login", 302)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
@@ -75,22 +80,26 @@ func ReadTransactions(writer http.ResponseWriter, request *http.Request) {
 		util.ErrorMessage(writer, request, "Cannot get data")
 		return
 	}
-	util.GenerateHTML(writer, response, "layout", "private.navbar", "transactions")
+	res := gin.H{
+		"title":   "Signup",
+		"payload": response,
+	}
+	render(c, res, "transactions.html")
 }
 
 // GET /blocks/:blockid
 // ReadBlock Show the new thread form page
-func ReadBlock(writer http.ResponseWriter, request *http.Request) {
+func ReadBlock(c *gin.Context) {
 	_, err := util.Session(writer, request)
 	if err != nil {
-		http.Redirect(writer, request, "/login", 302)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
 	path := request.URL.Path
 	_, numberParam := util.ShiftPath(path)
 	if numberParam == "/" {
-		http.Redirect(writer, request, "/txs", 302)
+		c.Redirect(http.StatusFound, "/txs")
 		return
 	}
 
@@ -106,22 +115,26 @@ func ReadBlock(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	util.GenerateHTML(writer, block, "layout", "private.navbar", "block")
+	res := gin.H{
+		"title":   "Signup",
+		"payload": block,
+	}
+	render(c, res, "block.html")
 }
 
 // GET /tx/:txid
 // ReadTransaction Show the new thread form page
-func ReadTransaction(writer http.ResponseWriter, request *http.Request) {
+func ReadTransaction(c *gin.Context) {
 	_, err := util.Session(writer, request)
 	if err != nil {
-		http.Redirect(writer, request, "/login", 302)
+		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
 	path := request.URL.Path
 	_, txHash := util.ShiftPath(path)
 	if txHash == "/" {
-		http.Redirect(writer, request, "/txs", 302)
+		c.Redirect(http.StatusFound, "/txs")
 		return
 	}
 
@@ -133,5 +146,9 @@ func ReadTransaction(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	response := models.TxDetail{Tx: tx, Receipt: receipt}
-	util.GenerateHTML(writer, response, "layout", "private.navbar", "transaction")
+	res := gin.H{
+		"title":   "Signup",
+		"payload": response,
+	}
+	render(c, res, "transaction.html")
 }
