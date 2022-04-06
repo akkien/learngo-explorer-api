@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/akkien/explorer-modern/controllers"
-	"github.com/akkien/explorer-modern/middlewares"
+	"github.com/akkien/learngo-explorer-api/controllers"
+	"github.com/akkien/learngo-explorer-api/middlewares"
 )
 
 func initializeRoutes() {

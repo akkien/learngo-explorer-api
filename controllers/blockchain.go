@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/akkien/explorer-modern/models"
-	"github.com/akkien/explorer-modern/util"
+	"github.com/akkien/learngo-explorer-api/models"
+	"github.com/akkien/learngo-explorer-api/util"
 	"github.com/gin-gonic/gin"
 )
 

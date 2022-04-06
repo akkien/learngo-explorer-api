@@ -1,6 +1,6 @@
 package models
 
-import "github.com/akkien/explorer-modern/db"
+import "github.com/akkien/learngo-explorer-api/db"
 
 // Receipt : transaction receipt
 type Receipt struct {

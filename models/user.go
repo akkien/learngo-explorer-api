@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/akkien/explorer-modern/db"
+	"github.com/akkien/learngo-explorer-api/db"
 )
 
 // User : user of application

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/akkien/explorer-modern/util"
+	"github.com/akkien/learngo-explorer-api/util"
 )
 
 var router *gin.Engine

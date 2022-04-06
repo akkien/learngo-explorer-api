@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/akkien/explorer-modern/db"
+	"github.com/akkien/learngo-explorer-api/db"
 )
 
 // Transaction for PostgreSQL

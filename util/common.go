@@ -3,13 +3,11 @@ package util
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"path"
 	"strings"
 
-	"github.com/Masterminds/sprig"
-	"github.com/akkien/explorer-modern/models"
+	"github.com/akkien/learngo-explorer-api/models"
 )
 
 // Convenience function for printing to stdout
@@ -33,30 +31,6 @@ func Session(writer http.ResponseWriter, request *http.Request) (sess models.Ses
 		}
 	}
 	return
-}
-
-// parse HTML templates
-// pass in a list of file names, and get a template
-func ParseTemplateFiles(filenames ...string) (t *template.Template) {
-	var files []string
-	t = template.New("layout")
-	for _, file := range filenames {
-		files = append(files, fmt.Sprintf("templates/%s.html", file))
-	}
-	t = template.Must(t.ParseFiles(files...))
-	return
-}
-
-// GenerateHTML get template
-func GenerateHTML(writer http.ResponseWriter, data interface{}, filenames ...string) {
-	var files []string
-	for _, file := range filenames {
-		files = append(files, fmt.Sprintf("templates/%s.html", file))
-	}
-
-	templates := template.Must(template.New("").Funcs(sprig.FuncMap()).ParseFiles(files...))
-	//templates := template.Must(template.ParseFiles(files...))
-	templates.ExecuteTemplate(writer, "layout", data)
 }
 
 // ShiftPath help parse params from url path
