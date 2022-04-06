@@ -1,5 +1,9 @@
 API_PORT=5001
 
+## restart: builds all binaries
+restart: stop build start
+	@echo "Explorer API restarted!"
+
 ## clean: cleans all binaries and runs go clean
 clean:
 	@echo "Cleaning..."
@@ -7,7 +11,7 @@ clean:
 	@go clean
 	@echo "Cleaned!"
 
-## build_front: builds the Explorer
+## build_front: builds the Explorer API
 build:
 	@echo "Building Explorer API..."
 	@go build -o dist/explorer_api .
@@ -22,5 +26,5 @@ start: build
 ## stop_invoice: stops the Explorer API
 stop:
 	@echo "Stopping the Explorer API..."
-	@-pkill -SIGTERM -f "explorer_api" -port=${API_PORT}
+	@-pkill -SIGTERM -f "explorer_api -port=${API_PORT}"
 	@echo "Stopped Explorer API"

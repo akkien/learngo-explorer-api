@@ -43,7 +43,7 @@ func main() {
 	var cfg config
 
 	flag.IntVar(&cfg.port, "port", 5001, "Server port to listen on")
-	flag.StringVar(&cfg.db.dsn, "dsn", "gostripe:gostripepw@tcp(localhost:3306)/widgets?parseTime=true&tls=false", "DSN")
+	flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres:mysecret@127.0.0.1:5432/explorer?sslmode=disable", "DSN")
 	flag.StringVar(&cfg.env, "env", "development", "Application enviornment {development|production|maintenance}")
 	flag.StringVar(&cfg.secretkey, "secret", "bRWmrwNUTqNUuzckjxsFlHZjxHkjrzKP", "secret key")
 
@@ -64,10 +64,7 @@ func main() {
 	// Setup Gin router
 	gin.SetMode(gin.ReleaseMode)
 
-	var router *gin.Engine
-	router = gin.Default()
-	router.Static("/static", "./static")
-	router.LoadHTMLGlob("templates/*")
+	router := gin.Default()
 
 	// Init & Run application
 	app := &application{
@@ -79,5 +76,5 @@ func main() {
 		DB:       models.DBModel{DB: conn},
 	}
 
-	app.router.Run("localhost:" + strconv.Itoa(cfg.port))
+	app.serve()
 }
