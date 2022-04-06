@@ -1,7 +1,5 @@
 package models
 
-import "github.com/akkien/learngo-explorer-api/db"
-
 // Receipt : transaction receipt
 type Receipt struct {
 	BlockHash         string `json:"blockHash"`
@@ -32,9 +30,9 @@ var receiptParams = []string{
 }
 
 // ReceiptByHash : Get all blocks in the database and returns it
-func ReceiptByHash(hash string) (item Receipt, err error) {
+func (m *DBModel) ReceiptByHash(hash string) (item Receipt, err error) {
 	item = Receipt{}
-	result := db.DB.Where("transaction_hash = ?").First(&item)
+	result := m.DB.Where("transaction_hash = ?").First(&item)
 	err = result.Error
 	return
 }

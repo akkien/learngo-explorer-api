@@ -5,16 +5,16 @@ import (
 	"github.com/akkien/learngo-explorer-api/middlewares"
 )
 
-func initializeRoutes() {
+func (app *application) routes() {
 	// Use the setUserStatus middleware for every route to set a flag
 	// indicating whether the request was from an authenticated user or not
-	router.Use(middlewares.SetUserStatus())
+	app.router.Use(middlewares.SetUserStatus())
 
 	// Handle the index route
-	router.GET("/", controllers.Index)
-	router.GET("/login", controllers.LoginPage)
-	router.GET("/signup", controllers.SignupPage)
-	router.GET("/signup", controllers.Signup)
+	app.router.GET("/", controllers.Index)
+	// app.router.GET("/login", controllers.LoginPage)
+	// app.router.GET("/signup", controllers.SignupPage)
+	// app.router.GET("/signup", controllers.Signup)
 
 	// // Group user related routes together
 	// userRoutes := router.Group("/u")

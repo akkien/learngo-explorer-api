@@ -1,9 +1,5 @@
 package models
 
-import (
-	"github.com/akkien/learngo-explorer-api/db"
-)
-
 // Block for PostgreSQL
 type Block struct {
 	Difficulty       int64  `json:"difficulty" db:"difficulty"`
@@ -51,16 +47,16 @@ var blockParams = []string{
 }
 
 // Blocks : Get all blocks in the database and returns it
-func Blocks(page, limit int) (blocks []Block, err error) {
+func (m *DBModel) Blocks(page, limit int) (blocks []Block, err error) {
 	offset := (page - 1) * limit
-	db.DB.Limit(limit).Offset(offset).Find(&blocks)
+	m.DB.Limit(limit).Offset(offset).Find(&blocks)
 	return
 }
 
 // BlockByNumber : Get all blocks in the database and returns it
-func BlockByNumber(number int) (item Block, err error) {
+func (m *DBModel) BlockByNumber(number int) (item Block, err error) {
 	item = Block{}
-	result := db.DB.Where("number = ?", number).First(&item)
+	result := m.DB.Where("number = ?", number).First(&item)
 	err = result.Error
 	return
 }

@@ -1,13 +1,10 @@
 package util
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"path"
 	"strings"
-
-	"github.com/akkien/learngo-explorer-api/models"
 )
 
 // Convenience function for printing to stdout
@@ -21,17 +18,17 @@ func ErrorMessage(writer http.ResponseWriter, request *http.Request, msg string)
 	http.Redirect(writer, request, strings.Join(url, ""), 302)
 }
 
-// Session checks if the user is logged in and has a session, if not err is not nil
-func Session(writer http.ResponseWriter, request *http.Request) (sess models.Session, err error) {
-	cookie, err := request.Cookie("_cookie")
-	if err == nil {
-		sess = models.Session{UUID: cookie.Value}
-		if ok, _ := sess.Check(); !ok {
-			err = errors.New("Invalid session")
-		}
-	}
-	return
-}
+// // Session checks if the user is logged in and has a session, if not err is not nil
+// func Session(writer http.ResponseWriter, request *http.Request) (sess models.Session, err error) {
+// 	cookie, err := request.Cookie("_cookie")
+// 	if err == nil {
+// 		sess = models.Session{UUID: cookie.Value}
+// 		if ok, _ := sess.Check(); !ok {
+// 			err = errors.New("Invalid session")
+// 		}
+// 	}
+// 	return
+// }
 
 // ShiftPath help parse params from url path
 func ShiftPath(p string) (head, tail string) {

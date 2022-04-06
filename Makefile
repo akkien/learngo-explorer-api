@@ -1,17 +1,26 @@
+API_PORT=5001
+
+## clean: cleans all binaries and runs go clean
+clean:
+	@echo "Cleaning..."
+	@- rm -f dist/*
+	@go clean
+	@echo "Cleaned!"
+
 ## build_front: builds the Explorer
 build:
-	@echo "Building Explorer..."
-	@go build -o ./explorer .
-	@echo "Explorer built!"
+	@echo "Building Explorer API..."
+	@go build -o dist/explorer_api .
+	@echo "Explorer API built!"
 
-## start: starts the Explorer
+## start: starts the Explorer API
 start: build
-	@echo "Starting the Explorer..."
-	@./explorer &
-	@echo "Explorer running!"
+	@echo "Starting the Explorer API..."
+	@./dist/explorer_api -port=${API_PORT} &
+	@echo "Explorer API running!"
 
-## stop_invoice: stops the Explorer
+## stop_invoice: stops the Explorer API
 stop:
-	@echo "Stopping the Explorer..."
-	@-pkill -SIGTERM -f "explorer"
-	@echo "Stopped Explorer"
+	@echo "Stopping the Explorer API..."
+	@-pkill -SIGTERM -f "explorer_api" -port=${API_PORT}
+	@echo "Stopped Explorer API"

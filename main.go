@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/akkien/learngo-explorer-api/db"
+	"github.com/akkien/learngo-explorer-api/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,10 +27,17 @@ type application struct {
 	errorLog *log.Logger
 	version  string
 	router   *gin.Engine
-	DB       db.DBModel
+	DB       models.DBModel
 }
 
-var router *gin.Engine
+func (app *application) serve() error {
+	app.routes()
+
+	// app.router.Use(gin.Logger())
+	// app.router.Use(gin.Recovery())
+	// app.router.Use(gin.ErrorLogger())
+	return app.router.Run("localhost:" + strconv.Itoa(app.config.port))
+}
 
 func main() {
 	var cfg config
@@ -47,7 +54,7 @@ func main() {
 
 	// Setup Database
 	// "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
-	conn, err := db.OpenDB(cfg.db.dsn)
+	conn, err := models.OpenDB(cfg.db.dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
@@ -57,11 +64,10 @@ func main() {
 	// Setup Gin router
 	gin.SetMode(gin.ReleaseMode)
 
+	var router *gin.Engine
 	router = gin.Default()
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("templates/*")
-
-	initializeRoutes()
 
 	// Init & Run application
 	app := &application{
@@ -70,7 +76,7 @@ func main() {
 		errorLog: errorLog,
 		version:  version,
 		router:   router,
-		DB:       db.DBModel{DB: conn},
+		DB:       models.DBModel{DB: conn},
 	}
 
 	app.router.Run("localhost:" + strconv.Itoa(cfg.port))

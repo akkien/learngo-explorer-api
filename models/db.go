@@ -1,4 +1,4 @@
-package db
+package models
 
 import (
 	_ "github.com/lib/pq"
