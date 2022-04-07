@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/akkien/learngo-explorer-api/middlewares"
 	"github.com/akkien/learngo-explorer-api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -27,15 +28,24 @@ type application struct {
 	errorLog *log.Logger
 	version  string
 	router   *gin.Engine
-	DB       models.DBModel
+}
+
+func (app *application) configure(m *models.DBModel) {
+	// app.router.Use(gin.Logger())
+	// app.router.Use(gin.Recovery())
+	// app.router.Use(gin.ErrorLogger())
+
+	app.router.Use(middlewares.SetUserStatus())
+
+	app.router.Use(func(c *gin.Context) {
+		c.Set("db", m)
+		c.Next()
+	})
 }
 
 func (app *application) serve() error {
 	app.routes()
 
-	// app.router.Use(gin.Logger())
-	// app.router.Use(gin.Recovery())
-	// app.router.Use(gin.ErrorLogger())
 	return app.router.Run("localhost:" + strconv.Itoa(app.config.port))
 }
 
@@ -54,12 +64,12 @@ func main() {
 
 	// Setup Database
 	// "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
-	conn, err := models.OpenDB(cfg.db.dsn)
+	db, err := models.OpenDB(cfg.db.dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
-	connDB, err := conn.DB()
-	defer connDB.Close()
+	dbConn, err := db.DB()
+	defer dbConn.Close()
 
 	// Setup Gin router
 	gin.SetMode(gin.ReleaseMode)
@@ -73,8 +83,8 @@ func main() {
 		errorLog: errorLog,
 		version:  version,
 		router:   router,
-		DB:       models.DBModel{DB: conn},
 	}
 
+	app.configure(&models.DBModel{DB: db})
 	app.serve()
 }

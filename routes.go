@@ -8,10 +8,37 @@ import (
 func (app *application) routes() {
 	// Use the setUserStatus middleware for every route to set a flag
 	// indicating whether the request was from an authenticated user or not
-	app.router.Use(middlewares.SetUserStatus())
+
+	api := app.router.Group("/api")
 
 	// Handle the index route
-	app.router.GET("/", controllers.Index)
+	api.GET("/", controllers.Index)
+
+	userRoutes := api.Group("/users")
+	{
+		userRoutes.POST("/auth", controllers.Auth)
+	}
+
+	blockRoutes := api.Group("/blocks")
+	{
+		blockRoutes.GET("/", controllers.GetBlocks)
+		blockRoutes.GET("/:number", controllers.GetBlock)
+		blockRoutes.GET("/:number/txs", controllers.GetTransactionsInBlock)
+	}
+
+	txRoutes := api.Group("/txs")
+	{
+		txRoutes.GET("/", controllers.GetTransactions)
+		txRoutes.GET("/:hash", controllers.GetTransaction)
+	}
+
+	albumRoutes := api.Group("/albums")
+	{
+		albumRoutes.POST("/", controllers.PostAlbums)
+		albumRoutes.GET("/", controllers.GetAlbums)
+		albumRoutes.GET("/:id", middlewares.ValidateToken(), controllers.GetAlbumByID)
+		albumRoutes.DELETE("/:id", controllers.DeleteAlbumByID)
+	}
 	// app.router.GET("/login", controllers.LoginPage)
 	// app.router.GET("/signup", controllers.SignupPage)
 	// app.router.GET("/signup", controllers.Signup)
@@ -41,39 +68,4 @@ func (app *application) routes() {
 	// 	// Ensure that the user is not logged in by using the middleware
 	// 	userRoutes.POST("/register", EnsureNotLoggedIn(), register)
 	// }
-
-	// // Group article related routes together
-	// articleRoutes := router.Group("/article")
-	// {
-	// 	// Handle GET requests at /article/view/some_article_id
-	// 	articleRoutes.GET("/view/:article_id", getArticle)
-	// }
 }
-
-// // index
-// mux.HandleFunc("/", route.Index)
-// // error
-// mux.HandleFunc("/err", route.Err)
-
-// // defined in route_auth.go
-// mux.HandleFunc("/login", route.Login)
-// mux.HandleFunc("/logout", route.Logout)
-// mux.HandleFunc("/signup", route.Signup)
-// mux.HandleFunc("/signup_account", route.SignupAccount)
-// mux.HandleFunc("/authenticate", route.Authenticate)
-
-// // defined in route_thread.go
-// mux.HandleFunc("/blocks", route.ReadBlocks)
-// mux.HandleFunc("/block/", route.ReadBlock)
-// mux.HandleFunc("/txs", route.ReadTransactions)
-// mux.HandleFunc("/tx/", route.ReadTransaction)
-
-// // starting up the server
-// server := &http.Server{
-// 	Addr:           util.Config.Address,
-// 	Handler:        mux,
-// 	ReadTimeout:    time.Duration(util.Config.ReadTimeout * int64(time.Second)),
-// 	WriteTimeout:   time.Duration(util.Config.WriteTimeout * int64(time.Second)),
-// 	MaxHeaderBytes: 1 << 20,
-// }
-// server.ListenAndServe()

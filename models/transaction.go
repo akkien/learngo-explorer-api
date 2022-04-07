@@ -15,7 +15,7 @@ type Transaction struct {
 	To               string `json:"to"`
 	TransactionIndex int64  `json:"transactionIndex"`
 	V                string `json:"v"`
-	Value            string `json:"value"` ///////////////////////// TOTO: change type to big.Int
+	Value            string `json:"value"`
 }
 
 var transactionParams = []string{

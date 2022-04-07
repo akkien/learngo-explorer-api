@@ -1,145 +1,116 @@
 package controllers
 
-// // GET /blocks
-// // Show the new thread form page
-// func ReadBlocks(c *gin.Context) {
-// 	_, err := util.Session(writer, request)
-// 	if err != nil {
-// 		c.Redirect(http.StatusFound, "/login")
-// 		return
-// 	}
+import (
+	"net/http"
+	"strconv"
 
-// 	blocks, err := models.Blocks(1, 10)
-// 	if err != nil {
-// 		util.ErrorMessage(writer, request, "Cannot get data")
-// 		return
-// 	}
-// 	response := models.BksTxs{Blocks: blocks}
-// 	res := gin.H{
-// 		"title":   "Signup",
-// 		"payload": response,
-// 	}
-// 	render(c, res, "blocks.html")
-// }
+	"github.com/akkien/learngo-explorer-api/models"
+	"github.com/gin-gonic/gin"
+)
 
-// // GET /txs
-// // ReadTransactions Show the new thread form page
-// func ReadTransactions(c *gin.Context) {
-// 	_, err := util.Session(writer, request)
-// 	if err != nil {
-// 		c.Redirect(http.StatusFound, "/login")
-// 		return
-// 	}
+// GET /blocks
+// Show the new thread form page
+func GetBlocks(c *gin.Context) {
+	// _, err := util.Session(writer, request)
+	// if err != nil {
+	// 	c.Redirect(http.StatusFound, "/login")
+	// 	return
+	// }
+	page, err1 := strconv.Atoi(c.Query("page"))
+	limit, err2 := strconv.Atoi(c.Query("limit"))
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query parameters"})
+		return
+	}
 
-// 	queries := request.URL.Query()
-// 	if len(queries) > 0 {
-// 		blockQuery := queries["block"]
-// 		response := models.BksTxs{}
+	models := c.MustGet("db").(*models.DBModel)
 
-// 		if len(blockQuery) > 0 {
-// 			// Query transactions in spectific block
-// 			blockNumber, err := strconv.Atoi(blockQuery[0])
-// 			if err != nil {
-// 				util.ErrorMessage(writer, request, "Cannot get data")
-// 				return
-// 			}
+	blocks, err := models.Blocks(page, limit)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot get data!"})
+		return
+	}
+	// 	res := gin.H{
+	// 		"title":   "Signup",
+	// 		"payload": response,
+	// 	}
+	// 	render(c, res, "transactions.html")
+	c.JSON(http.StatusOK, blocks)
+}
 
-// 			txs, err := models.TransactionsByBlock(blockNumber)
-// 			if err != nil {
-// 				util.ErrorMessage(writer, request, "Cannot get data")
-// 				return
-// 			}
-// 			response.Txs = txs
-// 		} else {
-// 			// There is query but wrong format, query txs of last block
-// 			txs, err := models.TransactionsLastBlock()
-// 			if err != nil {
-// 				util.ErrorMessage(writer, request, "Cannot get data")
-// 				return
-// 			}
-// 			response.Txs = txs
-// 		}
+// GET /blocks/:blockid
+func GetBlock(c *gin.Context) {
+	numberParam := c.Param("number")
 
-// 		util.GenerateHTML(writer, response, "layout", "private.navbar", "transactions")
-// 		return
-// 	}
+	blockNumber, err := strconv.Atoi(numberParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid block number"})
+		return
+	}
 
-// 	// Query last 10 txs
-// 	txs, err := models.Transactions(1, 10)
-// 	response := models.BksTxs{Txs: txs}
-// 	if err != nil {
-// 		util.ErrorMessage(writer, request, "Cannot get data")
-// 		return
-// 	}
-// 	res := gin.H{
-// 		"title":   "Signup",
-// 		"payload": response,
-// 	}
-// 	render(c, res, "transactions.html")
-// }
+	models := c.MustGet("db").(*models.DBModel)
 
-// // GET /blocks/:blockid
-// // ReadBlock Show the new thread form page
-// func ReadBlock(c *gin.Context) {
-// 	_, err := util.Session(writer, request)
-// 	if err != nil {
-// 		c.Redirect(http.StatusFound, "/login")
-// 		return
-// 	}
+	block, err := models.BlockByNumber(blockNumber)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot get data!"})
+		return
+	}
 
-// 	path := request.URL.Path
-// 	_, numberParam := util.ShiftPath(path)
-// 	if numberParam == "/" {
-// 		c.Redirect(http.StatusFound, "/txs")
-// 		return
-// 	}
+	c.JSON(http.StatusOK, block)
+}
 
-// 	blockNumber, err := strconv.Atoi(numberParam)
-// 	if err != nil {
-// 		util.ErrorMessage(writer, request, "Cannot get data")
-// 		return
-// 	}
+// GET /txs
+func GetTransactions(c *gin.Context) {
+	page, err1 := strconv.Atoi(c.Query("page"))
+	limit, err2 := strconv.Atoi(c.Query("limit"))
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query parameters"})
+		return
+	}
 
-// 	block, err := models.BlockByNumber(blockNumber)
-// 	if err != nil {
-// 		util.ErrorMessage(writer, request, "Cannot get data")
-// 		return
-// 	}
+	models := c.MustGet("db").(*models.DBModel)
 
-// 	res := gin.H{
-// 		"title":   "Signup",
-// 		"payload": block,
-// 	}
-// 	render(c, res, "block.html")
-// }
+	txs, err := models.Transactions(page, limit)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot get data!"})
+		return
+	}
 
-// // GET /tx/:txid
-// // ReadTransaction Show the new thread form page
-// func ReadTransaction(c *gin.Context) {
-// 	_, err := util.Session(writer, request)
-// 	if err != nil {
-// 		c.Redirect(http.StatusFound, "/login")
-// 		return
-// 	}
+	c.JSON(http.StatusOK, txs)
+}
 
-// 	path := request.URL.Path
-// 	_, txHash := util.ShiftPath(path)
-// 	if txHash == "/" {
-// 		c.Redirect(http.StatusFound, "/txs")
-// 		return
-// 	}
+// GET /blocks/:number/txs
+func GetTransactionsInBlock(c *gin.Context) {
+	numberParam := c.Param("number")
 
-// 	tx, err := models.TransactionByHash(txHash)
-// 	receipt, err := models.ReceiptByHash(txHash)
-// 	if err != nil {
-// 		util.ErrorMessage(writer, request, "Transaction not found")
-// 		return
-// 	}
+	blockNumber, err := strconv.Atoi(numberParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid block number"})
+		return
+	}
 
-// 	response := models.TxDetail{Tx: tx, Receipt: receipt}
-// 	res := gin.H{
-// 		"title":   "Signup",
-// 		"payload": response,
-// 	}
-// 	render(c, res, "transaction.html")
-// }
+	models := c.MustGet("db").(*models.DBModel)
+
+	txs, err := models.TransactionsByBlock(blockNumber)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot get data!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, txs)
+}
+
+// GET /txs/:hash
+func GetTransaction(c *gin.Context) {
+	txHash := c.Param("hash")
+
+	models := c.MustGet("db").(*models.DBModel)
+
+	tx, err := models.TransactionByHash(txHash)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot get data!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, tx)
+}
