@@ -55,8 +55,8 @@ func setGetBlocksRouter(m *models.DBModel,
 	if err != nil {
 		return req, httptest.NewRecorder(), err
 	}
-
 	req.Header.Set("Content-Type", "application/json")
+
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 

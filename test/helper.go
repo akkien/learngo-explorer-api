@@ -13,7 +13,7 @@ func routes(router *gin.Engine) {
 	api := router.Group("/api")
 
 	// Handle the index route
-	api.GET("/", controllers.Index)
+	api.GET("", controllers.Index)
 
 	userRoutes := api.Group("/users")
 	{
@@ -22,21 +22,21 @@ func routes(router *gin.Engine) {
 
 	blockRoutes := api.Group("/blocks")
 	{
-		blockRoutes.GET("/", controllers.GetBlocks)
+		blockRoutes.GET("", controllers.GetBlocks)
 		blockRoutes.GET("/:number", controllers.GetBlock)
 		blockRoutes.GET("/:number/txs", controllers.GetTransactionsInBlock)
 	}
 
 	txRoutes := api.Group("/txs")
 	{
-		txRoutes.GET("/", controllers.GetTransactions)
+		txRoutes.GET("", controllers.GetTransactions)
 		txRoutes.GET("/:hash", controllers.GetTransaction)
 	}
 
 	albumRoutes := api.Group("/albums")
 	{
-		albumRoutes.POST("/", controllers.PostAlbums)
-		albumRoutes.GET("/", controllers.GetAlbums)
+		albumRoutes.POST("", controllers.PostAlbums)
+		albumRoutes.GET("", controllers.GetAlbums)
 		albumRoutes.GET("/:id", middlewares.ValidateToken(), controllers.GetAlbumByID)
 		albumRoutes.DELETE("/:id", controllers.DeleteAlbumByID)
 	}
