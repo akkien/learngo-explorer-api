@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"flag"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -9,6 +11,7 @@ import (
 	"github.com/akkien/learngo-explorer-api/middlewares"
 	"github.com/akkien/learngo-explorer-api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 const version = "1.0.0"
@@ -30,17 +33,21 @@ type application struct {
 	router   *gin.Engine
 }
 
-func (app *application) configure(m *models.DBModel) {
+func (app *application) configure(m *models.DBModel, logger *log.Logger) {
 	// app.router.Use(gin.Logger())
 	// app.router.Use(gin.Recovery())
 	// app.router.Use(gin.ErrorLogger())
 
-	app.router.Use(middlewares.SetUserStatus())
-
 	app.router.Use(func(c *gin.Context) {
+		c.Set("requestId", uuid.New().String())
 		c.Set("db", m)
+		c.Set("logger", logger)
 		c.Next()
 	})
+
+	app.router.Use(middlewares.SetUserStatus())
+
+	app.router.Use(middlewares.RequestLoggerMiddleware())
 
 	app.routes()
 }
@@ -59,8 +66,10 @@ func main() {
 
 	flag.Parse()
 
-	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	f := createLogFile()
+
+	infoLog := log.New(f, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(f, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	// Setup Database
 	// "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
@@ -77,6 +86,8 @@ func main() {
 	// Setup Gin router
 	gin.SetMode(gin.ReleaseMode)
 
+	gin.DefaultWriter = io.MultiWriter(f)
+
 	router := gin.Default()
 
 	// Init & Run application
@@ -88,6 +99,21 @@ func main() {
 		router:   router,
 	}
 
-	app.configure(&models.DBModel{DB: db})
+	app.configure(&models.DBModel{DB: db}, infoLog)
 	app.serve()
+}
+
+func createLogFile() *os.File {
+	logsDir := "logs"
+	if _, err := os.Stat(logsDir); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(logsDir, os.ModePerm)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	f, err := os.OpenFile("./logs/explorer.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return f
 }

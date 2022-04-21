@@ -32,7 +32,6 @@ func (suite *TestSuiteEnv) Test_GetBlocks() {
 		a.Error(err)
 	}
 
-	//expected := []models.Block{}
 	a.Equal(10, len(actual))
 }
 
@@ -40,14 +39,11 @@ func setGetBlocksRouter(m *models.DBModel,
 ) (*http.Request, *httptest.ResponseRecorder, error) {
 	// Setup
 	router := gin.New()
-
 	router.Use(middlewares.SetUserStatus())
-
 	router.Use(func(c *gin.Context) {
 		c.Set("db", m)
 		c.Next()
 	})
-
 	routes(router)
 
 	// Make request
