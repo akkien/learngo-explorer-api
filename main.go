@@ -41,11 +41,11 @@ func (app *application) configure(m *models.DBModel) {
 		c.Set("db", m)
 		c.Next()
 	})
+
+	app.routes()
 }
 
 func (app *application) serve() error {
-	app.routes()
-
 	return app.router.Run("localhost:" + strconv.Itoa(app.config.port))
 }
 
@@ -69,6 +69,9 @@ func main() {
 		errorLog.Fatal(err)
 	}
 	dbConn, err := db.DB()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
 	defer dbConn.Close()
 
 	// Setup Gin router
