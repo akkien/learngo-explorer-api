@@ -39,33 +39,4 @@ func (app *application) routes() {
 		albumRoutes.GET("/:id", middlewares.ValidateToken(), controllers.GetAlbumByID)
 		albumRoutes.DELETE("/:id", controllers.DeleteAlbumByID)
 	}
-	// app.router.GET("/login", controllers.LoginPage)
-	// app.router.GET("/signup", controllers.SignupPage)
-	// app.router.GET("/signup", controllers.Signup)
-
-	// // Group user related routes together
-	// userRoutes := router.Group("/u")
-	// {
-	// 	// Handle the GET requests at /u/login
-	// 	// Show the login page
-	// 	// Ensure that the user is not logged in by using the middleware
-	// 	userRoutes.GET("/login", EnsureNotLoggedIn(), showLoginPage)
-
-	// 	// Handle POST requests at /u/login
-	// 	// Ensure that the user is not logged in by using the middleware
-	// 	userRoutes.POST("/login", EnsureNotLoggedIn(), performLogin)
-
-	// 	// Handle GET requests at /u/logout
-	// 	// Ensure that the user is logged in by using the middleware
-	// 	userRoutes.GET("/logout", EnsureLoggedIn(), logout)
-
-	// 	// Handle the GET requests at /u/register
-	// 	// Show the registration page
-	// 	// Ensure that the user is not logged in by using the middleware
-	// 	userRoutes.GET("/register", EnsureNotLoggedIn(), showRegistrationPage)
-
-	// 	// Handle POST requests at /u/register
-	// 	// Ensure that the user is not logged in by using the middleware
-	// 	userRoutes.POST("/register", EnsureNotLoggedIn(), register)
-	// }
 }
